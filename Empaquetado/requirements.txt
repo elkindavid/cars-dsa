@@ -3,4 +3,4 @@ pandas==1.4.2
 numpy==1.22.3
 scikit-learn==1.0.2
 xgboost==1.5.2
-pickle==4.0
+pickle==5.2.0
