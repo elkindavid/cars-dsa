@@ -2,36 +2,36 @@
 # coding: utf-8
 
 # In[ ]:
-
-
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from preprocessing import load_data, encode_categorical_features, remove_outliers, add_y_mx_feature
 from model import load_model
+from urllib.parse import quote as url_quote
 
 app = Flask(__name__)
 
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    # Obtenemos los datos de entrada
+    # Get the input data
     data = request.get_json()
 
-    # Preprocesamos los datos
+    # Preprocess the data
     X = load_data(data)
     X = encode_categorical_features(X)
     X = remove_outliers(X)
-    X['YxM'] = X['Year'] * X['Mileage']
+    X = add_y_mx_feature(X)
 
-    # Cargamos el modelo
+    # Load the model
     model = load_model("model.pkl")
 
-    # Realizamos la predicción
+    # Make the prediction
     predictions = model.predict(X)
 
-    # Devolvemos la respuesta
-    return {"predictions": predictions}
+    # Return the response
+    response = jsonify({"predictions": predictions})
+    response.headers["Location"] = url_quote("/")
+    return response
 
 
 if __name__ == "__main__":
     app.run(debug=True, host="3.94.86.97", port=8001)
-
