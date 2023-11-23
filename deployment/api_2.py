@@ -14,9 +14,6 @@ import pandas as pd
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes and origins
 
-# Definición aplicación Flask
-app = Flask(__name__)
-
 # Definición API Flask
 api = Api(
     app, 
@@ -24,8 +21,8 @@ api = Api(
     title='Car Prices API',
     description='Car Prices API')
 
-ns = api.namespace('Api/Predict', 
-     description='Car Prices API')
+# ns = api.namespace('Api/Predict', 
+#      description='Car Prices API')
 
 # Definición argumentos o parámetros de la API
 parser = api.parser()
