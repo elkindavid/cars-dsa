@@ -70,7 +70,7 @@ class CarPriceApi(Resource):
 
     @api.doc(parser=parser)
     @api.marshal_with(resource_fields)
-    def get(self):
+    def post(self):
         args = parser.parse_args()
         
         return {
