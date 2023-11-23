@@ -29,9 +29,9 @@ def predict(year, mileage, state, make, model):
     #Make prediction
     p1 = int(reg.predict(car_)[0])
 
-    #Rango aceptable de precios +/- 10% del precio de referencia
-    min_price = p1 * 0.90
-    max_price = p1 * 1.10
+    #Rango aceptable de precios +/- 20% del precio de referencia
+    min_price = p1 * 0.80
+    max_price = p1 * 1.20
 
     similar_cars = []
     for mk in dic_categoricas['Make'].keys():
