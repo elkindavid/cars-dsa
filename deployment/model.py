@@ -59,11 +59,14 @@ def predict(year, mileage, state, make, model):
 
 
 if __name__ == "__main__":
-    
+    logger.info("Year: {}".format(sys.argv[0]))
+
     if len(sys.argv) == 1:
         print('Please add an URL')
     else:
-        
+        print(sys.argv[0])
+
+
         year = sys.argv[0]
         mileage = sys.argv[1]
         state = sys.argv[2]
