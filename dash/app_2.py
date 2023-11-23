@@ -293,20 +293,19 @@ def make_api_request(nclicks,year, mileage, state, make, model):
         return "Enter all required data before making the API request"
 
     try:
-        payload = {'YEAR': year, 'MILEAGE': mileage, 'STATE': state, 'MAKE': make, 'MODEL': model}
+        payload = [{'YEAR': year, 'MILEAGE': mileage, 'STATE': state, 'MAKE': make, 'MODEL': model}]
 
         headers =  {"Content-Type":"application/json", "accept": "application/json"}
 
         # Make a POST request to the API
-        resultado = requests.get(api_url, json=payload, headers=headers).json()
-
+        resultado = requests.post(api_url, json= json.dumps(payload))
         # Obtener la respuesta de la API y mostrarla
         # mensaje_respuesta = resultado.json().get('mensaje', 'Error en la respuesta')
 
     except ValueError:
         return "Enter valid data before making the API request"
 
-    return resultado
+    return resultado.json()
 
 # Run the app
 if __name__ == '__main__':
