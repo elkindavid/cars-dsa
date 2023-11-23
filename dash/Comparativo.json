@@ -1,0 +1,43 @@
+[
+    {
+        "Year": 2018,
+        "PredictedPrice": 81721,
+        "RealPrice": 79999
+    },
+    {
+        "Year": 2015,
+        "PredictedPrice": 77727,
+        "RealPrice": 78356
+    },
+    {
+        "Year": 2012,
+        "PredictedPrice": 77747,
+        "RealPrice": 79231
+    },
+    {
+        "Year": 2009,
+        "PredictedPrice": 77232,
+        "RealPrice": 76500
+    },
+    {
+        "Year": 2006,
+        "PredictedPrice": 67106,
+        "RealPrice": 66995
+    },
+    {
+        "Year": 2003,
+        "PredictedPrice": 47200,
+        "RealPrice": 58320
+    },
+    {
+        "Year": 2000,
+        "PredictedPrice": 41300,
+        "RealPrice": 39990
+    },
+    {
+        "Year": 1997,
+        "PredictedPrice": 31650,
+        "RealPrice": 33200
+    }
+
+]
