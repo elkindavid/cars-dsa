@@ -73,7 +73,7 @@ resource_fields = api.model('Resource', {
 def title_page():
     return 'Car Rest API'
 
-@app.route('Api/predict', methods=['POST'])
+@app.route('/Api/predict', methods=['POST'])
 def predict():
     try:
         json_ = json.loads(request.json)
