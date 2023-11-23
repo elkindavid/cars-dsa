@@ -19,7 +19,7 @@ api = Api(
     title='Car Prices API',
     description='Car Prices API')
 
-ns = api.namespace('Predict', 
+ns = api.namespace('Api/Predict', 
      description='Car Prices API')
 
 # Definición argumentos o parámetros de la API
@@ -65,7 +65,7 @@ resource_fields = api.model('Resource', {
 })
 
 # Definición de la clase para disponibilización
-@ns.route('/api/predict', methods=['POST'])
+@ns.route('/', methods=['POST'])
 class CarPriceApi(Resource):
 
     @api.doc(parser=parser)
