@@ -4,7 +4,7 @@
 # In[ ]:
 from flask import Flask, request, jsonify
 from preprocessing import load_data, encode_categorical_features, remove_outliers, add_y_mx_feature
-from model import load_model
+from Model import load_model
 from urllib.parse import quote as url_quote
 
 app = Flask(__name__)
@@ -22,7 +22,7 @@ def predict():
     X = add_y_mx_feature(X)
 
     # Load the model
-    model = load_model("model.pkl")
+    Model = load_model("model.pkl")
 
     # Make the prediction
     predictions = model.predict(X)
