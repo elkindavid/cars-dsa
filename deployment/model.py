@@ -55,7 +55,7 @@ def predict(year, mileage, state, make, model):
         'Top5': top_5_similar_cars
     }
 
-    return result_dict
+    return p1
 
 
 if __name__ == "__main__":
