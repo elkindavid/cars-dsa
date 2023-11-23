@@ -74,9 +74,9 @@ class CarPriceApi(Resource):
     def post(self):
         args = parser.parse_args()
         
-        return jsonify({
+        return {
          "result": predict(args['YEAR'], args['MILEAGE'], args['STATE'], args['MAKE'], args['MODEL'])
-        }), 200
+        }, 200
     
     
 if __name__ == '__main__':
