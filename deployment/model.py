@@ -5,6 +5,7 @@ import joblib
 import sys
 import os
 import json
+from loguru import logger
 
 def predict(year, mileage, state, make, model):
     
