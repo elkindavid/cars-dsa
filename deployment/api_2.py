@@ -8,8 +8,6 @@ from flask_cors import CORS
 import json
 import ssl
 from functools import wraps
-context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-context.load_cert_chain('server.crt', 'server.key')
 import pandas as pd
 
 
@@ -84,7 +82,7 @@ def predict():
         return jsonify({'Prediction': prediction})
 
     except Exception as e:
-        return jsonify({'error': str(e), 'trace': traceback.format_exc()})
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
     port = 6500
