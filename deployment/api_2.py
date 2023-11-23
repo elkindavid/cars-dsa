@@ -21,8 +21,8 @@ api = Api(
     title='Car Prices API',
     description='Car Prices API')
 
-# ns = api.namespace('Api/Predict', 
-#      description='Car Prices API')
+ns = api.namespace('Api/Predict', 
+     description='Car Prices API')
 
 # Definición argumentos o parámetros de la API
 parser = api.parser()
@@ -66,11 +66,11 @@ resource_fields = api.model('Resource', {
     'result': fields.String,
 })
 
-@api.route('/', methods=['GET'])
-def title_page():
-    return 'Car Rest API'
+# @app.route('/', methods=['GET'])
+# def title_page():
+#     return 'Car Rest API'
 
-@api.route('/Api/predict', methods=['POST'])
+@ns.route('/', methods=['POST'])
 def predict():
     try:
         json_ = json.loads(request.json)
