@@ -273,11 +273,11 @@ def update_graph(col_chosen):
 @callback(
     Output(component_id='large-text-input', component_property='value'),
     [Input(component_id='predict-button', component_property='n_clicks')],
-    [State('year-dropdown', 'value'),
-     State('numeric-input', 'value'),
-     State('state-dropdown', 'value'),
-     State('make-dropdown', 'value'),
-     State('model-dropdown', 'value')]
+    [State(component_id='year-dropdown', component_property='value'),
+     State(component_id='numeric-input', component_property='value'),
+     State(component_id='state-dropdown', component_property='value'),
+     State(component_id='make-dropdown', component_property='value'),
+     State(component_id='model-dropdown', component_property='value')]
 )
 def make_api_request(n_clicks,year, mileage, state, make, model):
 
@@ -300,7 +300,9 @@ def make_api_request(n_clicks,year, mileage, state, make, model):
     except ValueError:
         return "Enter valid data before making the API request"
 
-    return api_data
+    # return api_data
+
+    return year
 
 # Run the app
 if __name__ == '__main__':
