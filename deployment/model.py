@@ -11,7 +11,7 @@ def predict(year, mileage, state, make, model):
     reg = joblib.load(os.path.dirname(__file__) + '/model.pkl') 
     
     # Cargar el diccionario desde el archivo JSON
-    with open("deployment/cod_categoricas.json", 'r') as archivo:
+    with open("cod_categoricas.json", 'r') as archivo:
         dic_categoricas = json.load(archivo)
 
     try:
