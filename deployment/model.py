@@ -42,7 +42,7 @@ def predict(year, mileage, state, make, model):
         price = int(reg.predict(car_2)[0])
 
         if min_price <= price <= max_price and mk != make:
-            similar_cars.append((mk,price))
+            similar_cars.append({mk,price})
 
     # Ordena los resultados por similitud de precio
     similar_cars.sort(key=lambda x: abs(x[1] - p1))
