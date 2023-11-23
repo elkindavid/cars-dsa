@@ -1,83 +1,47 @@
-#!/usr/bin/python
+import json
+from typing import Any
 
-from flask import Flask
-from flask_restx import Api, Resource, fields
-import joblib
-from model import predict
-from flask_cors import CORS
+import numpy as np
+import pandas as pd
+from fastapi import APIRouter, HTTPException
+from fastapi.encoders import jsonable_encoder
+from loguru import logger
+from model import __version__ as model_version
+from model.predict import make_prediction
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes and origins
+from app import __version__, schemas
+from app.config import settings
 
-# Definición aplicación Flask
-app = Flask(__name__)
+api_router = APIRouter()
 
-# Definición API Flask
-api = Api(
-    app, 
-    version='1.0', 
-    title='Car Prices API',
-    description='Car Prices API')
+# Ruta para verificar que la API se esté ejecutando correctamente
+@api_router.get("/health", response_model=schemas.Health, status_code=200)
+def health() -> dict:
+    """
+    Root Get
+    """
+    health = schemas.Health(
+        name=settings.PROJECT_NAME, api_version=__version__, model_version=model_version
+    )
 
-ns = api.namespace('Api/Predict', 
-     description='Car Prices API')
+    return health.dict()
 
-# Definición argumentos o parámetros de la API
-parser = api.parser()
+# Ruta para realizar las predicciones
+@api_router.post("/predict", response_model=schemas.PredictionResults, status_code=200)
+async def predict(input_data: schemas.MultipleDataInputs) -> Any:
+    """
+    Prediccion usando el modelo de bankchurn
+    """
 
-parser.add_argument(
-    'YEAR', 
-    type=int, 
-    required=True, 
-    help='Year', 
-    location='args')
+    input_df = pd.DataFrame(jsonable_encoder(input_data.inputs))
 
-parser.add_argument(
-    'MILEAGE', 
-    type=int, 
-    required=True, 
-    help='Mileage', 
-    location='args')
+    logger.info(f"Making prediction on inputs: {input_data.inputs}")
+    results = make_prediction(input_data=input_df.replace({np.nan: None}))
 
-parser.add_argument(
-    'STATE', 
-    type=str, 
-    required=True, 
-    help='State', 
-    location='args')
+    if results["errors"] is not None:
+        logger.warning(f"Prediction validation error: {results.get('errors')}")
+        raise HTTPException(status_code=400, detail=json.loads(results["errors"]))
 
-parser.add_argument(
-    'MAKE', 
-    type=str, 
-    required=True, 
-    help='Make', 
-    location='args')
+    logger.info(f"Prediction results: {results.get('predictions')}")
 
-parser.add_argument(
-    'MODEL', 
-    type=str, 
-    required=True, 
-    help='Model', 
-    location='args')
-
-resource_fields = api.model('Resource', {
-    'result': fields.String,
-})
-
-# Definición de la clase para disponibilización
-@ns.route('/', methods=['POST'])
-class CarPriceApi(Resource):
-
-    @api.doc(parser=parser)
-    @api.marshal_with(resource_fields)
-    def post(self):
-        args = parser.parse_args()
-        
-        return {
-         "result": predict(args['YEAR'], args['MILEAGE'], args['STATE'], args['MAKE'], args['MODEL'])
-        }, 200
-    
-    
-if __name__ == '__main__':
-    # Ejecución de la aplicación que disponibiliza el modelo de manera local en el puerto 5000
-    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
+    return results
