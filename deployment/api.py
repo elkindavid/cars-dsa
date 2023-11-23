@@ -65,7 +65,7 @@ resource_fields = api.model('Resource', {
 })
 
 # Definición de la clase para disponibilización
-@app.route('/api/predict')
+@ns.route('/api/predict', methods=['POST'])
 class CarPriceApi(Resource):
 
     @api.doc(parser=parser)
