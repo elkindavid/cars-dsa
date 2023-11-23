@@ -7,7 +7,7 @@ import json
 import plotly.graph_objs as go
 
 # PREDICTION API URL 
-api_url = "http://44.211.203.63:5000/api/predict"
+api_url = "http://44.211.203.63:5000/Api/Predict"
 
 # Importando datos
 df = pd.read_csv('../datos/dataTrain_carListings.csv')
