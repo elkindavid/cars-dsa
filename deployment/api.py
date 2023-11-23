@@ -71,13 +71,12 @@ class CarPriceApi(Resource):
 
     @api.doc(parser=parser)
     @api.marshal_with(resource_fields)
-    def post(self):
+    def get(self):
         args = parser.parse_args()
         
         return {
          "result": predict(args['YEAR'], args['MILEAGE'], args['STATE'], args['MAKE'], args['MODEL'])
         }, 200
-    
     
 if __name__ == '__main__':
     # Ejecución de la aplicación que disponibiliza el modelo de manera local en el puerto 5000
