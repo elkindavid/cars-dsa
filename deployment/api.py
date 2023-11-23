@@ -80,5 +80,4 @@ class CarPriceApi(Resource):
     
 if __name__ == '__main__':
     # Ejecución de la aplicación que disponibiliza el modelo de manera local en el puerto 5000
-    from waitress import serve
-    serve(app, host='0.0.0.0', port=5000)
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
