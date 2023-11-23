@@ -6,8 +6,8 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
-from model import __version__ as model_version
-from model.predict import make_prediction
+
+from model_ import predict
 
 from app import __version__, schemas
 from app.config import settings
@@ -21,7 +21,7 @@ def health() -> dict:
     Root Get
     """
     health = schemas.Health(
-        name=settings.PROJECT_NAME, api_version=__version__, model_version=model_version
+        name=settings.PROJECT_NAME, api_version=__version__
     )
 
     return health.dict()
@@ -36,7 +36,7 @@ async def predict(input_data: schemas.MultipleDataInputs) -> Any:
     input_df = pd.DataFrame(jsonable_encoder(input_data.inputs))
 
     logger.info(f"Making prediction on inputs: {input_data.inputs}")
-    results = make_prediction(input_data=input_df.replace({np.nan: None}))
+    results = predict(input_data=input_df.replace({np.nan: None}))
 
     if results["errors"] is not None:
         logger.warning(f"Prediction validation error: {results.get('errors')}")
