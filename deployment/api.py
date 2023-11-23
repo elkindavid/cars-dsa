@@ -9,8 +9,8 @@ from loguru import logger
 
 from model_ import predict
 
-from app import __version__, schemas
-from app.config import settings
+import schemas
+from config import settings
 
 api_router = APIRouter()
 
