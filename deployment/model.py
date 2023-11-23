@@ -64,11 +64,11 @@ if __name__ == "__main__":
         print('Please add an URL')
     else:
         
-        year = sys.argv[1]
-        mileage = sys.argv[2]
-        state = sys.argv[3]
-        make = sys.argv[4]
-        model = sys.argv[5]
+        year = sys.argv[0]
+        mileage = sys.argv[1]
+        state = sys.argv[2]
+        make = sys.argv[3]
+        model = sys.argv[4]
         
         p1 = predict(year, mileage, state, make, model)
         
