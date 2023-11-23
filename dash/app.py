@@ -7,7 +7,7 @@ import json
 import plotly.graph_objs as go
 
 # PREDICTION API URL 
-api_url = "http://44.211.203.63:5000/Api/Predict"
+api_url = "http://44.211.203.63:5000/Api/Predict/"
 
 # Importando datos
 df = pd.read_csv('../datos/dataTrain_carListings.csv')
@@ -279,13 +279,13 @@ def update_graph(col_chosen):
      State('make-dropdown', 'value'),
      State('model-dropdown', 'value')]
 )
-def make_api_request(year, mileage, state, make, model):
+def make_api_request(n_clicks,year, mileage, state, make, model):
 
     if any(value is None for value in [year, mileage, state, make, model]):
         return "Enter all required data before making the API request"
 
     try:
-        payload = {'year': year, 'mileage': mileage, 'state': state, 'make': make, 'model': model}
+        payload = {'YEAR': year, 'MILEAGE': mileage, 'STATE': state, 'MAKE': make, 'MODEL': model}
 
         headers =  {"Content-Type":"application/json", "accept": "application/json"}
 
