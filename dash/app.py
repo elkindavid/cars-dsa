@@ -7,7 +7,7 @@ import json
 import plotly.graph_objs as go
 
 # PREDICTION API URL 
-api_url = "http://44.211.203.63:5000/Api/Predict/"
+api_url = "http://44.211.203.63:5000/api/predict"
 
 # Importando datos
 df = pd.read_csv('../datos/dataTrain_carListings.csv')
@@ -273,19 +273,19 @@ def update_graph(col_chosen):
 @callback(
     Output(component_id='large-text-input', component_property='value'),
     [Input(component_id='predict-button', component_property='n_clicks')],
-    [State(component_id='year-dropdown', component_property='value'),
-     State(component_id='numeric-input', component_property='value'),
-     State(component_id='state-dropdown', component_property='value'),
-     State(component_id='make-dropdown', component_property='value'),
-     State(component_id='model-dropdown', component_property='value')]
+    [State('year-dropdown', 'value'),
+     State('numeric-input', 'value'),
+     State('state-dropdown', 'value'),
+     State('make-dropdown', 'value'),
+     State('model-dropdown', 'value')]
 )
-def make_api_request(n_clicks,year, mileage, state, make, model):
+def make_api_request(year, mileage, state, make, model):
 
     if any(value is None for value in [year, mileage, state, make, model]):
         return "Enter all required data before making the API request"
 
     try:
-        payload = {'YEAR': year, 'MILEAGE': mileage, 'STATE': state, 'MAKE': make, 'MODEL': model}
+        payload = {'year': year, 'mileage': mileage, 'state': state, 'make': make, 'model': model}
 
         headers =  {"Content-Type":"application/json", "accept": "application/json"}
 
@@ -300,9 +300,7 @@ def make_api_request(n_clicks,year, mileage, state, make, model):
     except ValueError:
         return "Enter valid data before making the API request"
 
-    # return api_data
-
-    return year
+    return api_data
 
 # Run the app
 if __name__ == '__main__':
