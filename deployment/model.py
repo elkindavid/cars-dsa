@@ -44,10 +44,10 @@ def predict(year, mileage, state, make, model):
         if min_price <= price <= max_price and mk != make:
             similar_cars.append({'Make':mk,'Price':price})
 
-    # Ordena los resultados por similitud de precio
-    similar_cars.sort(key=lambda x: abs(x[1] - p1))
+    # Ordenar la lista de diccionarios por la distancia al valor de referencia
+    similar_cars = sorted(similar_cars, key=lambda x: abs(x['Price'] - p1))
 
-    # Presenta los 5 mejores resultados
+    # Tomar los 5 diccionarios más cercanos
     top_5_similar_cars = similar_cars[:5]
 
     result_dict = {
