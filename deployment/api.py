@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restx import Api, Resource, fields
 import joblib
 from model import predict
 from flask_cors import CORS
+import json
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes and origins
@@ -65,7 +66,7 @@ resource_fields = api.model('Resource', {
 })
 
 # Definición de la clase para disponibilización
-@ns.route('/')
+@app.route('/', methods=['POST'])
 class CarPriceApi(Resource):
 
     @api.doc(parser=parser)
@@ -73,9 +74,9 @@ class CarPriceApi(Resource):
     def post(self):
         args = parser.parse_args()
         
-        return {
+        return jsonify({
          "result": predict(args['YEAR'], args['MILEAGE'], args['STATE'], args['MAKE'], args['MODEL'])
-        }, 200
+        }), 200
     
     
 if __name__ == '__main__':
