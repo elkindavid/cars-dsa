@@ -6,10 +6,11 @@ import dash_bootstrap_components as dbc
 import json
 import plotly.graph_objs as go
 import requests
+from flask import request
 from loguru import logger
 
 # PREDICTION API URL 
-api_url = "http://44.206.239.130:6500/Api/Predict"
+api_url = "http://192.168.1.3:6500/Api/Predict/"
 
 # Importando datos
 df = pd.read_csv('../datos/dataTrain_carListings.csv')
@@ -31,9 +32,6 @@ with open('Comparativo.json') as f:
 #years = [entry['Year'] for entry in price_data]
 #predicted_prices = [entry['PredictedPrice'] for entry in price_data]
 #real_prices = [entry['RealPrice'] for entry in price_data]
-
-
-
 
 # Extraer los datos de precio actual y precio anterior
 current_price = price_comparison_data['CurrentPrice']
@@ -288,11 +286,7 @@ def update_graph(col_chosen):
 )
 def make_api_request(nclicks,year, mileage, state, make, model):
 
-    logger.info("year: {}".format(year))
-    logger.info("Mileage: {}".format(mileage))
-    logger.info("State: {}".format(state))
-    logger.info("Make: {}".format(make))
-    logger.info("Model: {}".format(model))
+    # logger.info("year: {}".format(year))
 
     if any(value is None for value in [year, mileage, state, make, model]):
         return "Enter all required data before making the API request"
@@ -303,15 +297,12 @@ def make_api_request(nclicks,year, mileage, state, make, model):
         headers =  {"Content-Type":"application/json", "accept": "application/json"}
 
         # Make a POST request to the API
-        resultado = requests.get(api_url, json=payload, headers=headers).json()
-
-        # Obtener la respuesta de la API y mostrarla
-        # mensaje_respuesta = resultado.json().get('mensaje', 'Error en la respuesta')
-
+        resultado = requests.get(api_url, params=payload, headers=headers)
+        
     except ValueError:
         return "Enter valid data before making the API request"
 
-    return resultado
+    return resultado.text
 
 @app.callback(
     Output(component_id='price-comparison-bar-chart', component_property='figure'),
