@@ -12,7 +12,7 @@ from loguru import logger
 # PREDICTION API URL 
 api_url = "http://192.168.1.6:6500/Api/Predict/"
 
-prediction_list = []
+prediction_list = [0,0]
 
 # Importando datos
 df = pd.read_csv('../datos/dataTrain_carListings_predict.csv')
@@ -42,7 +42,7 @@ prices = [entry['Price'] for entry in car_data]
 df_sorted_make = pd.DataFrame(df['Make'].sort_values(ascending=True).unique(), columns=['Make'])
 df_sorted_model = pd.DataFrame(df['Model'].sort_values(ascending=True).unique(), columns=['Model'])
 df_sorted_state = pd.DataFrame(df['State'].sort_values(ascending=True).unique(), columns=['State'])
-df_sorted_year = pd.DataFrame(df['Year'].sort_values(ascending=True).unique(), columns=['Year'])
+df_sorted_year = pd.DataFrame(df['Year'].sort_values(ascending=False).unique(), columns=['Year'])
 
 # Initialize the app - incorporate a Dash Bootstrap theme
 external_stylesheets = [dbc.themes.CERULEAN]
@@ -227,17 +227,7 @@ app.layout = dbc.Container([
             dcc.Graph(figure={}, id='my-first-graph-final'), 
             width=7
         )
-    ]),
-
-    #Tercera fila de gráficos
-    dbc.Row([
-        # Real Price vs Predicted Price
-        dbc.Col(
-            # Add a textarea for large text input
-            dcc.Textarea(id='large-text-input', placeholder='Enter large text here', style={'width': '100%', 'height': '100px'}, className='mb-3'),
-            width=12
-        )
-    ]),
+    ])
 
 ], fluid=True)
 
@@ -247,6 +237,7 @@ app.layout = dbc.Container([
     Input(component_id='radio-buttons-final', component_property='value'),
 )
 def update_graph(col_chosen):
+
     fig = px.histogram(df, x=col_chosen, y='Price', histfunc='avg')
     fig.update_layout(title_text="Data Distribution")
     return fig
@@ -286,6 +277,7 @@ def make_api_request(nclicks,year, mileage, state, make, model):
         if 'Predict' in data:
             # Guarda el valor de 'Predict' en una variable
             predict_value = data['Predict']
+            prediction_list.append(predict_value)
             print(f'Valor de Predict: {predict_value}')
         
         # Verifica si la clave 'Top5' está presente en el diccionario
@@ -318,7 +310,7 @@ def make_api_request(nclicks,year, mileage, state, make, model):
                     'data': [
                         go.Bar(
                             x=['Current Price', 'Previous Price'],
-                            y=[predict_value    , 0]
+                            y=[predict_value, prediction_list[-2]]
                         )
                     ],
                     'layout': go.Layout(
