@@ -10,7 +10,9 @@ from flask import request
 from loguru import logger
 
 # PREDICTION API URL 
-api_url = "http://192.168.1.3:6500/Api/Predict/"
+api_url = "http://192.168.1.6:6500/Api/Predict/"
+
+prediction_list = []
 
 # Importando datos
 df = pd.read_csv('../datos/dataTrain_carListings.csv')
@@ -33,11 +35,6 @@ with open('Comparativo.json') as f:
 #predicted_prices = [entry['PredictedPrice'] for entry in price_data]
 #real_prices = [entry['RealPrice'] for entry in price_data]
 
-# Extraer los datos de precio actual y precio anterior
-current_price = price_comparison_data['CurrentPrice']
-previous_price = price_comparison_data['PreviousPrice']
-
-# Top 5 Prices
 makes = [entry['Make'] for entry in car_data]
 prices = [entry['Price'] for entry in car_data]
 
@@ -160,22 +157,12 @@ app.layout = dbc.Container([
             ),
             width=5
         ),
-        # Top Five Make
+        # Similar Cars Options
+
         dbc.Col(
             dcc.Graph(
                 id='top-makes-treemap',
-                figure={
-                    'data': [
-                        go.Treemap(
-                            labels=makes,
-                            parents=[''] * len(makes),
-                            values=prices
-                        )
-                    ],
-                    'layout': go.Layout(
-                        title='Top Car Makes by Price (Treemap)'
-                    )
-                }
+                figure={}
             ),
             width=5
         ),
@@ -183,18 +170,7 @@ app.layout = dbc.Container([
         dbc.Col(
             dcc.Graph(
                 id='price-comparison-bar-chart',
-                figure={
-                    'data': [
-                        go.Bar(
-                            x=['Price1', 'Price'],
-                            y=[df_line['Price'], df_line['Price']]
-                        )
-                    ],
-                    'layout': go.Layout(
-                        title='Prediction',
-                        yaxis={'title': 'Price'}
-                    )
-                }
+                figure={}
             ),
             width=2
         )
@@ -276,7 +252,8 @@ def update_graph(col_chosen):
 
 
 @callback(
-    Output(component_id='large-text-input', component_property='value'),
+    [Output(component_id='price-comparison-bar-chart', component_property='figure'),
+    Output(component_id='top-makes-treemap', component_property='figure')],
     [Input(component_id='predict-button', component_property='n_clicks'),
     State('year-dropdown', 'value'),
     State('numeric-input', 'value'),
@@ -286,53 +263,73 @@ def update_graph(col_chosen):
 )
 def make_api_request(nclicks,year, mileage, state, make, model):
 
-    # logger.info("year: {}".format(year))
-
     if any(value is None for value in [year, mileage, state, make, model]):
-        return "Enter all required data before making the API request"
+        return {},{}
 
     try:
+
         payload = {'YEAR': year, 'MILEAGE': mileage, 'STATE': state, 'MAKE': make, 'MODEL': model}
 
         headers =  {"Content-Type":"application/json", "accept": "application/json"}
 
-        # Make a POST request to the API
-        resultado = requests.get(api_url, params=payload, headers=headers)
+        # Make a GET request to the API
+        api_response = requests.get(api_url, params=payload, headers=headers).json()
+
+        # Extrae la cadena JSON de la respuesta
+        json_string = api_response["result"]
+
+        # Convierte la cadena JSON a un diccionario de Python
+        data = json.loads(json_string.replace("'", "\""))
+        
+        # Verifica si la clave 'Predict' está presente en el diccionario
+        if 'Predict' in data:
+            # Guarda el valor de 'Predict' en una variable
+            predict_value = data['Predict']
+            print(f'Valor de Predict: {predict_value}')
+        
+        # Verifica si la clave 'Top5' está presente en el diccionario
+        if 'Top5' in data:
+            # Guarda el valor de 'Top5' en una variable
+            top5_value = data['Top5']
+            print(f'Valor de Top5: {top5_value}')
+        
+        # Similar cars variables
+        makes = [entry['Make'] for entry in top5_value]
+        prices = [entry['Price'] for entry in top5_value]
+
+        if len(makes) != 0:
+            treemap={
+                        'data': [
+                            go.Treemap(
+                                labels=makes,
+                                parents=[''] * len(makes),
+                                values=prices
+                            )
+                        ],
+                        'layout': go.Layout(
+                            title='Similar Cars Options'
+                        )
+                    }
+        else:
+            treemap = {}
+        
+        bar_chart={
+                    'data': [
+                        go.Bar(
+                            x=['Current Price', 'Previous Price'],
+                            y=[predict_value    , 0]
+                        )
+                    ],
+                    'layout': go.Layout(
+                        title='Prediction',
+                        yaxis={'title': 'Price'}
+                    )
+                }
         
     except ValueError:
         return "Enter valid data before making the API request"
 
-    return resultado.text
-
-@app.callback(
-    Output(component_id='price-comparison-bar-chart', component_property='figure'),
-    [Input(component_id='make-dropdown', component_property='value'),
-     Input(component_id='year-dropdown', component_property='value')],
-)
-def update_price_comparison_chart(selected_make, selected_year):
-    # Filter data based on the selected make and year
-    filtered_data = df_line[(df_line['Make'] == selected_make) & (df_line['Year'] == selected_year)]
-
-    # Extract the updated values for price
-    updated_prices = filtered_data['Price']
-
-    # Create a new figure for the bar chart
-    fig = {
-        'data': [
-            go.Bar(
-                x=['Price'],
-                y=[updated_prices.mean()] if not updated_prices.empty else [0],
-                text=[f'Make: {selected_make}, Year: {selected_year}, ' if not updated_prices.empty else 'No Data'],
-                hoverinfo='text'
-            )
-        ],
-        'layout': go.Layout(
-            title=f'Avg Price for Make: {selected_make}, Year: {selected_year}',
-            yaxis={'title': 'Average Price'}
-        )
-    }
-
-    return fig
+    return bar_chart,treemap
 
 @app.callback(
     Output(component_id='price-comparison-line-chart', component_property='figure'),
