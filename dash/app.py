@@ -13,8 +13,9 @@ from loguru import logger
 api_url = "http://192.168.1.3:6500/Api/Predict/"
 
 # Importando datos
-df = pd.read_csv('../datos/dataTrain_carListings.csv')
-df_line = df.groupby(['Year','Make'])['Price'].mean().reset_index()
+df = pd.read_csv('../datos/dataTrain_carListings_predict.csv')
+#df_line = df.groupby(['Year','Make'])['Price','Predictions'].mean().reset_index()
+df_line = df.groupby(['Year', 'Make']).agg({'Price': 'mean', 'Predictions': 'mean'}).reset_index()
 
 with open('feature_importance.json') as f:
     feature_importance_data = json.load(f)
@@ -225,7 +226,7 @@ app.layout = dbc.Container([
                     'data': [
                         go.Scatter(
                             x=df_line['Year'],
-                            y=df_line['Price'],
+                            y=df_line['Predictions'],
                             mode='lines',
                             name='Predicted Price'
                         ),
@@ -344,7 +345,7 @@ def update_price_comparison_chart(selected_make):
 
     # Extract the updated values for years, predicted prices, and real prices
     updated_years = filtered_data['Year']
-    updated_predicted_prices = filtered_data['Price']
+    updated_predicted_prices = filtered_data['Predictions']
     updated_real_prices = filtered_data['Price']
 
     # Create a new figure for the line chart
