@@ -56,26 +56,5 @@ def predict(year, mileage, state, make, model):
         'Top5': top_5_similar_cars
     }
 
-    return p1
-
-
-if __name__ == "__main__":
-    logger.info("Year: {}".format(sys.argv[0]))
-
-    if len(sys.argv) == 1:
-        print('Please add an URL')
-    else:
-        print(sys.argv[0])
-
-
-        year = sys.argv[0]
-        mileage = sys.argv[1]
-        state = sys.argv[2]
-        make = sys.argv[3]
-        model = sys.argv[4]
-        
-        p1 = predict(year, mileage, state, make, model)
-        
-        print(car_)
-        print('Car Price: ', p1)
+    return result_dict
         

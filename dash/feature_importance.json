@@ -1,7 +1,8 @@
 {
-  "Year": 0.35,
-  "Mileage": 0.30,
-  "Make": 0.20,
-  "Model": 0.15,
-  "State": 0.10
+  "Model": 0.31,
+  "Make": 0.29,
+  "Year": 0.28,
+  "YxM": 0.08,
+  "Mileage": 0.04,
+  "State": 0.01
 }
