@@ -183,7 +183,7 @@ app.layout = dbc.Container([
         ),
         dbc.Col(
             dbc.RadioItems(
-                options=[{"label": x, "value": x} for x in ['Year', 'State', 'Make']],
+                options=[{"label": x, "value": x} for x in ['Year', 'State', 'Make','Model']],
                 value='Year',
                 inline=True,
                 id='radio-buttons-final'
