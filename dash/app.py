@@ -1,13 +1,11 @@
 # Import packages
-from dash import Dash, html, dash_table, dcc, callback, Output, Input, State
+from dash import Dash, html, dcc, callback, Output, Input, State
 import pandas as pd
 import plotly.express as px
 import dash_bootstrap_components as dbc
 import json
 import plotly.graph_objs as go
 import requests
-from flask import request
-from loguru import logger
 
 # PREDICTION API URL 
 api_url = "http://192.168.1.6:6500/Api/Predict/"
@@ -37,6 +35,7 @@ app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 # App layout
 app.layout = dbc.Container([
+
     # Título
     dbc.Row([
         html.Div('Car Prices', className="text-primary text-center fs-3"),
@@ -109,12 +108,12 @@ app.layout = dbc.Container([
             width=2
         ),
         dbc.Col(
-            # Agregar una caja de entrada numérica
+            # Caja de entrada numérica
             dbc.Input(id='numeric-input', type='number', placeholder='Enter a Number', className='mb-3'),
             width=2
         ),
         dbc.Col(
-            # Agregar un botón de predicción
+            # Botón de predicción
             dbc.Button('Predict', id='predict-button', color='primary', className='mb-3'),
             width=2
         )
@@ -122,8 +121,9 @@ app.layout = dbc.Container([
     ]),
 
 
-    #Primera fila de gráficos
+    #Primera fila de gráficos -----------------------------------------------------------------------------------------------------------
     dbc.Row([
+
         # Feature Importance
         dbc.Col(
             dcc.Graph(
@@ -145,8 +145,8 @@ app.layout = dbc.Container([
             ),
             width=5
         ),
-        # Similar Cars Options
 
+        # Similar Cars Options
         dbc.Col(
             dcc.Graph(
                 id='top-makes-treemap',
@@ -154,6 +154,7 @@ app.layout = dbc.Container([
             ),
             width=5
         ),
+
          # Prediction
         dbc.Col(
             dcc.Graph(
@@ -164,8 +165,9 @@ app.layout = dbc.Container([
         )
     ]),
 
-    #Segunda fila de gráficos
+    #Segunda fila de gráficos-------------------------------------------------------------------------------------------------------------------------
     dbc.Row([
+
         # Real Price vs Predicted Price
         dbc.Col(
             dcc.Graph(
@@ -186,7 +188,7 @@ app.layout = dbc.Container([
                         )
                     ],
                     'layout': go.Layout(
-                        title='Predicted vs Real avg Prices  Over Years',
+                        title='Predicted vs Real Avg Prices Over Years',
                         xaxis={'title': 'Year'},
                         yaxis={'title': 'Price'}
                     )
@@ -233,44 +235,34 @@ def make_api_request(nclicks,year, mileage, state, make, model):
         # Convierte la cadena JSON a un diccionario de Python
         data = json.loads(json_string.replace("'", "\""))
         
-        # Verifica si la clave 'Predict' está presente en el diccionario
-        if 'Predict' in data:
-            # Guarda el valor de 'Predict' en una variable
-            predict_value = data['Predict']
-            prediction_list.append(predict_value)
-            print(f'Valor de Predict: {predict_value}')
-        
-        # Verifica si la clave 'Top5' está presente en el diccionario
-        if 'Top5' in data:
-            # Guarda el valor de 'Top5' en una variable
-            top5_value = data['Top5']
-            print(f'Valor de Top5: {top5_value}')
+        # Agregar nueva predición a la lista
+        prediction_list.append(data['Predict'])
         
         # Similar cars variables
-        makes = [entry['Make'] for entry in top5_value]
-        prices = [entry['Price'] for entry in top5_value]
+        makes = [entry['Make'] for entry in data['Top5']]
+        models = [entry['Model'] for entry in data['Top5']]
+        prices = [entry['Price'] for entry in data['Top5']]
 
-        if len(makes) != 0:
-            treemap={
-                        'data': [
-                            go.Treemap(
-                                labels=makes,
-                                parents=[''] * len(makes),
-                                values=prices
-                            )
-                        ],
-                        'layout': go.Layout(
-                            title='Similar Cars Options'
-                        )
-                    }
-        else:
-            treemap = {}
+        
+        treemap={
+                'data': [
+                    go.Treemap(
+                        labels=[f"{make} - {models}" for make, models in zip(makes, models)],
+                        parents=[''] * len(makes),
+                        values=prices
+                    )
+                ],
+                'layout': go.Layout(
+                    title='Similar Cars Options'
+                )
+                }
+        
         
         bar_chart={
                     'data': [
                         go.Bar(
                             x=['Current Price', 'Previous Price'],
-                            y=[predict_value, prediction_list[-2]]
+                            y=[data['Predict'], prediction_list[-2]]
                         )
                     ],
                     'layout': go.Layout(
@@ -346,8 +338,6 @@ def update_price_comparison_chart(selected_make):
     }
 
     return fig, valor, opciones, fig_model
-
-
 
 # Run the app
 if __name__ == '__main__':
