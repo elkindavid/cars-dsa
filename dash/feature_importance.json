@@ -1,9 +1,8 @@
 {
-  "Predictions": 0.96,
-  "Year": 0.01,
-  "Mileage": 0.01,
-  "State": 0.01,
-  "Make": 0.01,
-  "Model": 0.01,
-  "YxM": 0.01
+  "Model": 0.31,
+  "Make": 0.29,
+  "Year": 0.28,
+  "YxM": 0.08,
+  "Mileage": 0.04,
+  "State": 0.01
 }

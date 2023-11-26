@@ -12,37 +12,24 @@ from loguru import logger
 # PREDICTION API URL 
 api_url = "http://192.168.1.6:6500/Api/Predict/"
 
+# Lista de predicciones para mostrar la predicción anterior
 prediction_list = [0,0]
 
 # Importando datos
 df = pd.read_csv('../datos/dataTrain_carListings.csv')
-#df_line = df.groupby(['Year','Make'])['Price','Predictions'].mean().reset_index()
+
+# Promedio de precios por año y marca
 df_line = df.groupby(['Year', 'Make']).agg({'Price': 'mean', 'Predictions': 'mean'}).reset_index()
 
 with open('feature_importance.json') as f:
     feature_importance_data = json.load(f)
 
-with open('top_five_make.json') as f:
-    car_data = json.load(f)
-
-with open('prediction.json') as f:
-    price_comparison_data = json.load(f)
-
-with open('Comparativo.json') as f:
-    price_data = json.load(f)
-
-# Extraer los datos de año, precio predicho y precio real
-#years = [entry['Year'] for entry in price_data]
-#predicted_prices = [entry['PredictedPrice'] for entry in price_data]
-#real_prices = [entry['RealPrice'] for entry in price_data]
-
-makes = [entry['Make'] for entry in car_data]
-prices = [entry['Price'] for entry in car_data]
-
 df_sorted_make = pd.DataFrame(df['Make'].sort_values(ascending=True).unique(), columns=['Make'])
-df_sorted_model = pd.DataFrame(df['Model'].sort_values(ascending=True).unique(), columns=['Model'])
 df_sorted_state = pd.DataFrame(df['State'].sort_values(ascending=True).unique(), columns=['State'])
 df_sorted_year = pd.DataFrame(df['Year'].sort_values(ascending=False).unique(), columns=['Year'])
+
+# Obtener modelos asociados a cada make
+df_sorted_model = pd.DataFrame(df[df['Make'] == df_sorted_make['Make'][0]]['Model'].unique(), columns=['Model'])
 
 # Initialize the app - incorporate a Dash Bootstrap theme
 external_stylesheets = [dbc.themes.CERULEAN]
@@ -177,21 +164,6 @@ app.layout = dbc.Container([
         )
     ]),
 
-     dbc.Row([
-        dbc.Col(
-            width=6
-        ),
-        dbc.Col(
-            dbc.RadioItems(
-                options=[{"label": x, "value": x} for x in ['Year', 'State', 'Make','Model']],
-                value='Year',
-                inline=True,
-                id='radio-buttons-final'
-            ),
-            width=6
-        ) 
-    ]),
-
     #Segunda fila de gráficos
     dbc.Row([
         # Real Price vs Predicted Price
@@ -230,18 +202,6 @@ app.layout = dbc.Container([
     ])
 
 ], fluid=True)
-
-# Add controls to build the interaction
-@callback(
-    Output(component_id='my-first-graph-final', component_property='figure'),
-    Input(component_id='radio-buttons-final', component_property='value'),
-)
-def update_graph(col_chosen):
-
-    fig = px.histogram(df, x=col_chosen, y='Price', histfunc='avg')
-    fig.update_layout(title_text="Data Distribution")
-    return fig
-
 
 @callback(
     [Output(component_id='price-comparison-bar-chart', component_property='figure'),
@@ -325,10 +285,31 @@ def make_api_request(nclicks,year, mileage, state, make, model):
     return bar_chart,treemap
 
 @app.callback(
-    Output(component_id='price-comparison-line-chart', component_property='figure'),
+    [Output(component_id='price-comparison-line-chart', component_property='figure'),
+     Output(component_id='model-dropdown', component_property='value'),
+     Output(component_id='model-dropdown', component_property='options'),
+     Output(component_id='my-first-graph-final', component_property='figure')],
     [Input(component_id='make-dropdown', component_property='value')],
 )
 def update_price_comparison_chart(selected_make):
+
+    # Asignar valor al Model Dropdown
+    df_sorted_model = pd.DataFrame(df[df['Make'] == selected_make]['Model'].unique(), columns=['Model'])
+    opciones = [{'label': model, 'value': model} for model in df_sorted_model['Model']]
+    valor = df_sorted_model['Model'][0]
+
+    # Distribución de modelos por marca
+    df_hist = df[df['Make'] == selected_make][['Model','Price']]
+
+    # Promedio de precios por variable seleccionada
+    df_hist = df_hist.groupby(['Model']).agg({'Price': 'mean'}).reset_index()
+
+    # Ordenar el DataFrame por 'Price' de mayor a menor
+    df_sorted = df_hist.sort_values(by='Price', ascending=False)
+
+    fig_model = px.histogram(df_sorted, x='Model', y='Price', histfunc='avg')
+    fig_model.update_layout(title_text="Data Distribution")
+
     # Filter data based on the selected make
     filtered_data = df_line[df_line['Make'] == selected_make]
 
@@ -364,7 +345,7 @@ def update_price_comparison_chart(selected_make):
         )
     }
 
-    return fig
+    return fig, valor, opciones, fig_model
 
 
 
