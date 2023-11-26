@@ -1,0 +1,6 @@
+[core]
+    remote = myremote
+['remote "my_s3"']
+    url = s3://cars-dsa-bucket/datos/
+['remote "myremote"']
+    url = s3://cars-dsa-bucket/datos/
