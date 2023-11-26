@@ -5,18 +5,18 @@ import joblib
 import sys
 import os
 import json
-from loguru import logger
 
 def predict(year, mileage, state, make, model):
     
     reg = joblib.load(os.path.dirname(__file__) + '/model.pkl') 
-
-    # Importando datos
-    df = pd.read_csv('../datos/dataTrain_carListings.csv')
     
-    # Cargar el diccionario desde el archivo JSON
+    # Cargar el diccionario cod_categoricas desde el archivo JSON
     with open("cod_categoricas.json", 'r') as archivo:
         dic_categoricas = json.load(archivo)
+
+    # Cargar el diccionario make_model desde el archivo JSON
+    with open("make_model.json", 'r') as archivo:
+        dic_make_model = json.load(archivo)
 
     try:
         state_ = dic_categoricas['State'][state]
@@ -40,9 +40,7 @@ def predict(year, mileage, state, make, model):
     similar_cars = []
     for mk in dic_categoricas['Make'].keys():
 
-        # Obtener un modelo asociado a cada make
-        df_model = pd.DataFrame(df[df['Make'] == mk]['Model'].unique(), columns=['Model'])
-        md = df_model['Model'][0]
+        md = dic_make_model[mk][0]
 
         car_2 = pd.DataFrame([[year, mileage, state_, dic_categoricas['Make'][mk], dic_categoricas['Model'][md]]], columns=['Year','Mileage','State','Make','Model'])   
         car_2['YxM'] = (year * mileage)
@@ -50,7 +48,7 @@ def predict(year, mileage, state, make, model):
         price = int(reg.predict(car_2)[0])
 
         if min_price <= price <= max_price and mk != make:
-            similar_cars.append({'Make':mk,'Model':df_model['Model'][0],'Price':price})
+            similar_cars.append({'Make':mk,'Model':md,'Price':price})
 
     # Ordenar la lista de diccionarios por la distancia al valor de referencia
     similar_cars = sorted(similar_cars, key=lambda x: abs(x['Price'] - p1))

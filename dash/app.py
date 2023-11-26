@@ -281,7 +281,7 @@ def make_api_request(nclicks,year, mileage, state, make, model):
      Output(component_id='model-dropdown', component_property='value'),
      Output(component_id='model-dropdown', component_property='options'),
      Output(component_id='my-first-graph-final', component_property='figure')],
-    [Input(component_id='make-dropdown', component_property='value')],
+    [Input(component_id='make-dropdown', component_property='value')]
 )
 def update_price_comparison_chart(selected_make):
 
@@ -290,7 +290,7 @@ def update_price_comparison_chart(selected_make):
     opciones = [{'label': model, 'value': model} for model in df_sorted_model['Model']]
     valor = df_sorted_model['Model'][0]
 
-    # Distribución de modelos por marca
+    # Distribución de modelos por marca y año
     df_hist = df[df['Make'] == selected_make][['Model','Price']]
 
     # Promedio de precios por variable seleccionada
