@@ -15,7 +15,7 @@ api_url = "http://192.168.1.6:6500/Api/Predict/"
 prediction_list = [0,0]
 
 # Importando datos
-df = pd.read_csv('../datos/dataTrain_carListings_predict.csv')
+df = pd.read_csv('../datos/dataTrain_carListings.csv')
 #df_line = df.groupby(['Year','Make'])['Price','Predictions'].mean().reset_index()
 df_line = df.groupby(['Year', 'Make']).agg({'Price': 'mean', 'Predictions': 'mean'}).reset_index()
 
