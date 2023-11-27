@@ -8,7 +8,8 @@ import plotly.graph_objs as go
 import requests
 
 # PREDICTION API URL 
-api_url = "http://192.168.1.6:6500/Api/Predict/"
+#api_url = "http://192.168.1.6:6500/Api/Predict/"
+api_url = "http://192.168.0.8:6500/Api/Predict/"
 
 # Lista de predicciones para mostrar la predicción anterior
 prediction_list = [0,0]
