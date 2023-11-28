@@ -1,5 +1,4 @@
 # TrueCar Analityc Solution
 
-[![Made with Clipchamp](https://clipchamp.com/e.svg)](https://clipchamp.com/watch/PDilxtgXkNT?utm_source=embed&utm_medium=embed&utm_campaign=watch)
+<iframe width="640" height="360" src="https://clipchamp.com/watch/PDilxtgXkNT" frameborder="0" allowfullscreen></iframe>
 
-<iframe allow="autoplay;" allowfullscreen style="border:none" src="https://clipchamp.com/watch/PDilxtgXkNT/embed" width="640" height="360"></iframe>
